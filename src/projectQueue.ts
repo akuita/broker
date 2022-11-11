@@ -9,7 +9,8 @@ type UpdateProgressAction = {
   data: {
     projectName: string;
     projectId: number;
-    projectExportId: number;
+    projectExportId?: number;
+    projectPreviewId?: number;
     percentage: number;
     message: string;
   };
@@ -20,7 +21,8 @@ type CompletedAction = {
   data: {
     projectName: string;
     projectId: number;
-    projectExportId: number;
+    projectExportId?: number;
+    projectPreviewId?: number;
     path: string;
   };
 };
@@ -197,28 +199,38 @@ export class ProjectQueue {
   }
 
   private toReportPayload(payload: ProgressPayload): Report {
+    const generateType = payload.data.projectExportId
+      ? { projectExport: { id: payload.data.projectExportId }, projectPreview: undefined }
+      : payload.data.projectPreviewId
+      ? { projectPreview: { id: payload.data.projectPreviewId }, projectExport: undefined }
+      : undefined;
+
+    if (!generateType) {
+      throw new Error("either projectExportId or projectPreviewId must be exist.");
+    }
+
     switch (payload.type) {
       case "UPDATE_PROGRESS":
         return {
           projectName: payload.data.projectName,
           projectId: payload.data.projectId,
-          projectExportId: payload.data.projectExportId,
           progress: Report_Progress.fromPartial({
             percentage: payload.data.percentage,
             message: payload.data.message,
           }),
           complete: undefined,
+          ...generateType,
         };
 
       case "COMPLETE":
         return {
           projectName: payload.data.projectName,
           projectId: payload.data.projectId,
-          projectExportId: payload.data.projectExportId,
           progress: undefined,
           complete: Report_Complete.fromPartial({
             path: payload.data.path,
           }),
+          ...generateType,
         };
     }
   }

@@ -4,7 +4,8 @@ declare type UpdateProgressAction = {
     data: {
         projectName: string;
         projectId: number;
-        projectExportId: number;
+        projectExportId?: number;
+        projectPreviewId?: number;
         percentage: number;
         message: string;
     };
@@ -14,7 +15,8 @@ declare type CompletedAction = {
     data: {
         projectName: string;
         projectId: number;
-        projectExportId: number;
+        projectExportId?: number;
+        projectPreviewId?: number;
         path: string;
     };
 };

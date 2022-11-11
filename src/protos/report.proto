@@ -4,11 +4,15 @@ package protobuf;
 message Report {
 	string project_name = 1;
 	int32 project_id = 2;
-	int32 project_export_id = 3;
 
 	oneof state {
-		Progress progress = 4;
-		Complete complete = 5;
+		Progress progress = 3;
+		Complete complete = 4;
+	}
+
+	oneof report_type {
+		ProjectExport project_export = 5;
+		ProjectPreview project_preview = 6;
 	}
 
 	message Progress {
@@ -18,5 +22,13 @@ message Report {
 
 	message Complete {
 		string path = 1;
+	}
+
+	message ProjectExport {
+		int32 id = 1;
+	}
+
+	message ProjectPreview {
+		int32 id = 1;
 	}
 }
